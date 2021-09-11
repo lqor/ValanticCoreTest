@@ -2,7 +2,7 @@
     "packageDirectories": [
         {
             "path": "force-app",
-            "package": "DependencyInjection",
+            "package": "VdmcCore",
             "versionNumber": "1.0.0",
             "default": true
         }

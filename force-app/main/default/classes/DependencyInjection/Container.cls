@@ -19,7 +19,7 @@ global class Container implements ContainerInterface{
                 
                 return facade;
             }catch(Exception e){
-                throw new FacadeNotExistsException(type);
+                throw new FacadeNotExistsException(type, e.getMessage());
             }
         }
 
