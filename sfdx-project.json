@@ -1,0 +1,17 @@
+{
+    "packageDirectories": [
+        {
+            "path": "force-app",
+            "package": "DependencyInjection",
+            "versionNumber": "1.0.0",
+            "default": true
+        }
+    ],
+    "name": "scratch",
+    "namespace": "",
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "sourceApiVersion": "52.0",
+    "packageAliases": {
+        "DependencyInjection": "0Ho09000000sY7PCAU"
+    }
+}
