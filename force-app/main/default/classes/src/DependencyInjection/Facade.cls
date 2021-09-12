@@ -2,6 +2,8 @@ global abstract class Facade {
     
 
     private ContainerInterface container;
+
+    global Facade(){}
     
 
     /**
