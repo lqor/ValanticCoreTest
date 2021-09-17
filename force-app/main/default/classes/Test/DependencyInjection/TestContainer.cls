@@ -16,9 +16,16 @@ global @isTest class TestContainer {
         ContainerInterface container = Container.getDi();
         try {
             container.get(NotAFacade.class);
-            System.assert(false, 'Missing FacadeNotExists exception!');
-        }catch(FacadeNotExistsException e){
-            System.assert(true, 'Got FacadeNotExists exception!' + e.getMessage());
+            System.assert(false, 'Missing FacadeInvalidClassException exception!');
+        }catch(FacadeInvalidClassException e){
+            System.assert(true, 'Got FacadeInvalidClassException exception!' + e.getMessage());
+        }
+
+        try {
+            container.get(TestFacadeError.class);
+            System.assert(false, 'Missing init error handling');
+        }catch(FacadeInitializeException e){
+            System.assert(true, 'Got FacadeInitializeException exception!' + e.getMessage());
         }
     }
 
@@ -44,6 +51,14 @@ global @isTest class TestContainer {
 
         global Integer incrementCounter() {
             return ++this.counter;
+        }
+    }
+
+    global class TestFacadeError extends Facade {
+        
+
+        global override void init() {
+            throw new CalloutException('Test');
         }
     }
 

@@ -10,16 +10,22 @@ global class Container implements ContainerInterface{
     global Facade get(Type type) {
         
         if(!facades.containsKey(type)){
+            Facade facade;
             try{
-                Facade facade = (Facade)type.newInstance();
+                facade = (Facade)type.newInstance();
+            }catch(Exception e){
+                throw new FacadeInvalidClassException(type, e);
+            }
+
+            try {
                 facade.setContainer(this);
                 facade.init();
 
                 facades.put(type, facade);
                 
                 return facade;
-            }catch(Exception e){
-                throw new FacadeNotExistsException(type, e.getMessage());
+            } catch (Exception e) {
+                throw new FacadeInitializeException(type, e);
             }
         }
 
