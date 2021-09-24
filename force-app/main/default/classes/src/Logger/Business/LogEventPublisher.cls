@@ -9,8 +9,13 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
     }
 
     public void logError(Exception ex) {
+        this.logError(ex.getTypeName(), ex);
+    }
+
+    public void logError(String title, Exception ex) {
         LogEntryEvent__e log = new LogEntryEvent__e();
         
+        log.Title__c = title;
         log.TransactionId__c = this.TRANSACTION_ID;
         log.ExceptionMessage__c = ex.getMessage();
         log.ExceptionStackTrace__c = ex.getStackTraceString();
@@ -19,9 +24,10 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         this.logEvents.add(log);
     } 
 
-    public void logWarning(String warning) {
+    public void logWarning(String title, String warning) {
         LogEntryEvent__e log = new LogEntryEvent__e();
         
+        log.Title__c = title;
         log.TransactionId__c = this.TRANSACTION_ID;
         log.ExceptionMessage__c = warning;
         log.LogLevel__c = LogLevel.WARNING.name();
@@ -29,9 +35,10 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         this.logEvents.add(log);
     }
 
-    public void logInfo(String info) {
+    public void logInfo(String title, String info) {
         LogEntryEvent__e log = new LogEntryEvent__e();
         
+        log.Title__c = title;
         log.TransactionId__c = this.TRANSACTION_ID;
         log.ExceptionMessage__c = info;
         log.LogLevel__c = LogLevel.INFO.name();
@@ -43,7 +50,6 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         
         Eventbus.publish(this.logEvents);
         this.logEvents.clear();
-
     }
 
     private String getTransactionId() {

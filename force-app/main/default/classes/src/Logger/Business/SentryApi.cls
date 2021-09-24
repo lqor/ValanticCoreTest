@@ -10,23 +10,45 @@ public with sharing class SentryApi {
     }
 
 
-    public void sendEvent(List<LogEntryEvent__e> events) {
+    public void sendEvent(List<LogEntryData> logs) {
         
-        if(events.size() == 0){
+        if(logs.size() == 0){
             return;
         }
         
         List<String> payloads = new List<String>();
 
-        for(LogEntryEvent__e log:events){
+        for(LogEntryData log:logs){
 
+            payloads.add(JSON.serialize(buildPayload(log)).replaceAll('"res_', '"'));
         }
+        System.debug('TEST DEBUG WIEDERFINDEN');
+        System.debug(payloads);
 
         postData(this.getStoreEndpoint(), this.getSecurityHeader(), payloads);
     }
 
-    @future
-    public static void postData(String endpoint, String securityHeader, List<String> payloads) {
+    private SentryEvent.BaseData buildPayload(LogEntryData logEntryData) {
+        SentryEvent.BaseData event;
+
+        if(logEntryData.logLevel == LogLevel.ERROR.name()){
+            event = new SentryEvent.ExceptionEvent();
+        }else{
+            event = new SentryEvent.InfoEvent();
+            
+        }
+        event.res_transaction = logEntryData.transactionId;
+        event.event_id = logEntryData.uuid;
+        event.environment = 'Test';
+        event.platform = 'salesforce';
+        event.level = logEntryData.logLevel.toLowerCase();
+        event.timestamp = logEntryData.created;
+
+        return event;
+    }
+
+    @future(callout=true)
+    private static void postData(String endpoint, String securityHeader, List<String> payloads) {
         HttpRequest request;
         Http http = new Http();
         
