@@ -21,6 +21,8 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         log.ExceptionStackTrace__c = ex.getStackTraceString();
         log.LogLevel__c = LogLevel.ERROR.name();
 
+        log = this.addUserData(log);
+
         this.logEvents.add(log);
     } 
 
@@ -32,6 +34,8 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         log.ExceptionMessage__c = warning;
         log.LogLevel__c = LogLevel.WARNING.name();
 
+        log = this.addUserData(log);
+        
         this.logEvents.add(log);
     }
 
@@ -43,6 +47,8 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         log.ExceptionMessage__c = info;
         log.LogLevel__c = LogLevel.INFO.name();
 
+        log = this.addUserData(log);
+        
         this.logEvents.add(log);
     }
 
@@ -50,6 +56,14 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         
         Eventbus.publish(this.logEvents);
         this.logEvents.clear();
+    }
+
+    private LogEntryEvent__e addUserData(LogEntryEvent__e event) {
+        
+        event.UserName__c = UserInfo.getUserName();
+        event.UserEmail__c = UserInfo.getUserEmail();
+
+        return event;
     }
 
     private String getTransactionId() {

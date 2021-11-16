@@ -14,6 +14,13 @@ public class SentryEvent{
         public String level;
         
         public SentryTags tags;
+        public UserData user;
+    }
+
+    public class UserData implements DTO {
+        public Id id;
+        public String username;
+        public String email;
     }
 
     public class InfoEvent extends BaseData{

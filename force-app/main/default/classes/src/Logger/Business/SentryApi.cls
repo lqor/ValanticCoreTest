@@ -32,11 +32,13 @@ public with sharing class SentryApi {
         SentryEvent.BaseData event;
 
         if(logEntryData.logLevel == LogLevel.ERROR.name()){
-            event = new SentryEvent.ExceptionEvent();
+            event = this.buildExceptionPayload(LogEntryData);
         }else{
-            event = new SentryEvent.InfoEvent();
-            
+            event = this.buildInfoPayload(logEntryData);
         }
+        
+        event.user = this.buildUserPayload(logEntryData);
+
         event.res_transaction = logEntryData.transactionId;
         event.event_id = logEntryData.uuid;
         event.environment = 'Test';
@@ -45,6 +47,42 @@ public with sharing class SentryApi {
         event.timestamp = logEntryData.created;
 
         return event;
+    }
+
+    private SentryEvent.ExceptionEvent buildExceptionPayload(LogEntryData LogEntryData) {
+        SentryEvent.ExceptionEvent event = new SentryEvent.ExceptionEvent();
+        //https://develop.sentry.dev/sdk/event-payloads/exception/#exception-mechanism
+
+        //todo: Erweitern Stacktrace etc.
+        return event;
+    }
+
+    private SentryEvent.InfoEvent buildInfoPayload(LogEntryData logEntryData) {
+        SentryEvent.InfoEvent event = new SentryEvent.InfoEvent();
+        SentryEvent.MessageData msgData = new SentryEvent.MessageData();
+
+        msgData.message = String.format(
+            LoggerConstants.MSG_INFO,
+            new List<Object> {
+                logEntryData.title,
+                logEntryData.exceptionMessage
+            }
+        );
+
+        event.message = msgData;
+        
+    
+        return event;
+    }
+
+    private SentryEvent.UserData buildUserPayload(LogEntryData logEntryData) {
+        SentryEvent.UserData userData = new SentryEvent.UserData();
+
+        userData.id = logEntryData.owner;
+        userData.email = logEntryData.ownerEmail;
+        userData.username = logEntryData.ownerUsername;
+
+        return userData;
     }
 
     @future(callout=true)

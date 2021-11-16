@@ -3,6 +3,8 @@ public class LogEntryData implements DTO{
     public String uuid;
     public Datetime created;
     public Id owner;
+    public String ownerEmail;
+    public String ownerUsername;
     public String apiVersion;
     public String logLevel;
 
