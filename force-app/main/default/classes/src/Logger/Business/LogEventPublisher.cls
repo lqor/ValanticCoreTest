@@ -20,7 +20,7 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         log.ExceptionMessage__c = ex.getMessage();
         log.ExceptionStackTrace__c = ex.getStackTraceString();
         log.LogLevel__c = LogLevel.ERROR.name();
-
+        
         log = this.addUserData(log);
 
         this.logEvents.add(log);

@@ -31,6 +31,10 @@ public class SentryEvent{
         public String message;
     }
 
+    public class WarningEvent extends BaseData {
+        public MessageData message;
+    }
+
     public class ExceptionEvent extends BaseData {
         public ExceptionData res_exception;
     }

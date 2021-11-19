@@ -5,8 +5,14 @@ public with sharing class SentryApi {
     private static final Integer SENTRY_VERSION = 7;
     private static final String SENTRY_KEY = '7ded4c6396c64aac92a0e70f90a01e36';
     
-    public SentryApi() {
+    private Map<String, PayloadBuilder> payloadBuilders;
 
+    public SentryApi() {
+        this.payloadBuilders = new Map<String, PayloadBuilder> {
+            LogLevel.INFO.name() => new InfoPayloadBuilder(),
+            LogLevel.WARNING.name() => new WarningPayloadBuilder(),
+            LogLevel.ERROR.name() => new ErrorPayloadBuilder()
+        };
     }
 
 
@@ -31,12 +37,13 @@ public with sharing class SentryApi {
     private SentryEvent.BaseData buildPayload(LogEntryData logEntryData) {
         SentryEvent.BaseData event;
 
-        if(logEntryData.logLevel == LogLevel.ERROR.name()){
-            event = this.buildExceptionPayload(LogEntryData);
-        }else{
-            event = this.buildInfoPayload(logEntryData);
+        if(!payloadBuilders.containsKey(logEntryData.logLevel)) {
+            throw new InvalidLogLevelException();
         }
+
+        PayloadBuilder payloadBuilder = this.payloadBuilders.get(logEntryData.logLevel);
         
+        event = payloadBuilder.buildPayLoad(logEntryData);
         event.user = this.buildUserPayload(logEntryData);
 
         event.res_transaction = logEntryData.transactionId;
@@ -49,31 +56,6 @@ public with sharing class SentryApi {
         return event;
     }
 
-    private SentryEvent.ExceptionEvent buildExceptionPayload(LogEntryData LogEntryData) {
-        SentryEvent.ExceptionEvent event = new SentryEvent.ExceptionEvent();
-        //https://develop.sentry.dev/sdk/event-payloads/exception/#exception-mechanism
-
-        //todo: Erweitern Stacktrace etc.
-        return event;
-    }
-
-    private SentryEvent.InfoEvent buildInfoPayload(LogEntryData logEntryData) {
-        SentryEvent.InfoEvent event = new SentryEvent.InfoEvent();
-        SentryEvent.MessageData msgData = new SentryEvent.MessageData();
-
-        msgData.message = String.format(
-            LoggerConstants.MSG_INFO,
-            new List<Object> {
-                logEntryData.title,
-                logEntryData.exceptionMessage
-            }
-        );
-
-        event.message = msgData;
-        
-    
-        return event;
-    }
 
     private SentryEvent.UserData buildUserPayload(LogEntryData logEntryData) {
         SentryEvent.UserData userData = new SentryEvent.UserData();
@@ -97,8 +79,8 @@ public with sharing class SentryApi {
             request.setMethod('POST');
             request.setHeader('X-Sentry-Auth', securityHeader);
             request.setBody(payload);
-            
-            http.send(request);
+            System.debug('SEND EXCEPTION');
+            System.debug(http.send(request));
         }
     }
 
