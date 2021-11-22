@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Sandbox</label>
+    <protected>false</protected>
+    <values>
+        <field>Active__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Sentry_Key__c</field>
+        <value xsi:type="xsd:string">7ded4c6396c64aac92a0e70f90a01e36</value>
+    </values>
+    <values>
+        <field>Sentry_Project_Id__c</field>
+        <value xsi:type="xsd:string">5955214</value>
+    </values>
+    <values>
+        <field>Sentry_Url__c</field>
+        <value xsi:type="xsd:string">https://o996722.ingest.sentry.io</value>
+    </values>
+    <values>
+        <field>Sentry_Version__c</field>
+        <value xsi:type="xsd:double">7.0</value>
+    </values>
+</CustomMetadata>

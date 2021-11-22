@@ -4,8 +4,13 @@ global class LoggerFacade extends Facade{
     private SentryApi sentryApi;
 
     global override void init() {
-        this.logEventPublisher = new LogEventPublisher();
-        this.sentryApi = new SentryApi();
+        OrganizationInfoFacade organizationInfoFacade = (OrganizationInfoFacade) this.getContainer().get(OrganizationInfoFacade.class);
+        LoggerConfigReadRepository loggerConfigReadrepository = new LoggerConfigReadRepository(organizationInfoFacade.getInfo().type);
+        this.logEventPublisher = new LogEventPublisher(loggerConfigReadrepository);
+        this.sentryApi = new SentryApi(
+            organizationInfoFacade,
+            loggerConfigReadrepository
+        );
     }
 
     global void logError(Exception ex) {

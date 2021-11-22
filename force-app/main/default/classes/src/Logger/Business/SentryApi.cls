@@ -1,13 +1,20 @@
 public with sharing class SentryApi {
     
-    private static final String SENTRY_URL = 'https://o996722.ingest.sentry.io';
+    /*private static final String SENTRY_URL = 'https://o996722.ingest.sentry.io';
     private static final String SENTRY_PROJECT_ID = '5955214';
     private static final Integer SENTRY_VERSION = 7;
     private static final String SENTRY_KEY = '7ded4c6396c64aac92a0e70f90a01e36';
-    
+    */
+
+    private OrganizationInfoFacade organizationInfo;
+
+    private LoggerConfigReadRepository configReadRepository;
     private Map<String, PayloadBuilder> payloadBuilders;
 
-    public SentryApi() {
+    public SentryApi(OrganizationInfoFacade organizationInfo, LoggerConfigReadRepository loggerConfigReadrepository) {
+        this.organizationInfo = organizationInfo;
+        this.configReadRepository = loggerConfigReadrepository;
+
         this.payloadBuilders = new Map<String, PayloadBuilder> {
             LogLevel.INFO.name() => new InfoPayloadBuilder(),
             LogLevel.WARNING.name() => new WarningPayloadBuilder(),
@@ -28,8 +35,6 @@ public with sharing class SentryApi {
 
             payloads.add(JSON.serialize(buildPayload(log)).replaceAll('"res_', '"'));
         }
-        System.debug('TEST DEBUG WIEDERFINDEN');
-        System.debug(payloads);
 
         postData(this.getStoreEndpoint(), this.getSecurityHeader(), payloads);
     }
@@ -40,7 +45,7 @@ public with sharing class SentryApi {
         if(!payloadBuilders.containsKey(logEntryData.logLevel)) {
             throw new InvalidLogLevelException();
         }
-
+        OrganizationInfoData orgInfo = this.organizationInfo.getInfo();
         PayloadBuilder payloadBuilder = this.payloadBuilders.get(logEntryData.logLevel);
         
         event = payloadBuilder.buildPayLoad(logEntryData);
@@ -48,8 +53,8 @@ public with sharing class SentryApi {
 
         event.res_transaction = logEntryData.transactionId;
         event.event_id = logEntryData.uuid;
-        event.environment = 'Test';
-        event.platform = 'salesforce';
+        event.environment = orgInfo.type.name().toLowerCase();
+        event.platform = LoggerConstants.PLATFORM;
         event.level = logEntryData.logLevel.toLowerCase();
         event.timestamp = logEntryData.created;
 
@@ -79,8 +84,7 @@ public with sharing class SentryApi {
             request.setMethod('POST');
             request.setHeader('X-Sentry-Auth', securityHeader);
             request.setBody(payload);
-            System.debug('SEND EXCEPTION');
-            System.debug(http.send(request));
+            http.send(request);
         }
     }
 
@@ -88,8 +92,8 @@ public with sharing class SentryApi {
         return String.format(
                 '{0}/api/{1}/store/',
                 new List<Object> {
-                    SENTRY_URL,
-                    SENTRY_PROJECT_ID
+                    this.configReadRepository.getSentryUrl(),
+                    this.configReadRepository.getSentryProjectId()
                 }
             );
     }
@@ -98,8 +102,8 @@ public with sharing class SentryApi {
         return String.format(
             'Sentry sentry_version={0},sentry_key={1}', 
             new List<Object> {
-                SENTRY_VERSION,
-                SENTRY_KEY
+                this.configReadRepository.getSentryVersion(),
+                this.configReadRepository.getSentryKey()
             });
     }
 
