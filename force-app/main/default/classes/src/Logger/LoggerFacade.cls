@@ -14,7 +14,7 @@ global class LoggerFacade extends Facade{
     }
 
     global void logError(Exception ex) {
-        this.logEventPublisher.logError(ex);
+        this.logError(ex.getTypeName(), ex);
     }
 
     global void logError(String title, Exception ex) {

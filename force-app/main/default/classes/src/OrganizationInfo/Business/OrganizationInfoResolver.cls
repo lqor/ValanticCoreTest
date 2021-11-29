@@ -3,8 +3,8 @@ public class OrganizationInfoResolver {
     private OrganizationReadRepositoryInterface organziationReadRepository;
     private OrganizationInfoData info;
 
-    public OrganizationInfoResolver() {
-        this.organziationReadRepository = new OrganizationReadRepository();
+    public OrganizationInfoResolver(OrganizationReadRepositoryInterface organziationReadRepository) {
+        this.organziationReadRepository = organziationReadRepository;
     }
 
     public OrganizationInfoData getInfo() {
@@ -21,7 +21,6 @@ public class OrganizationInfoResolver {
         OrganizationInfoData info = new OrganizationInfoData();
 
         info.type = this.getType(org);
-
         return info;
     }
 

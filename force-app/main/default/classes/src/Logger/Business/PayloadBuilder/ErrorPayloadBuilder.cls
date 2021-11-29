@@ -22,7 +22,6 @@ public class ErrorPayloadBuilder implements PayloadBuilder {
             // Sample: Class.SampleClass.execute: line 36, column 1
             if (m.find()) 
             {
-                System.debug('@@m:--'+m);
                 SentryEvent.FrameData frameData = new SentryEvent.FrameData();
                 frameData.res_class = m.group(1);
                 frameData.filename = m.group(1) + '.cls';
@@ -38,13 +37,11 @@ public class ErrorPayloadBuilder implements PayloadBuilder {
                 };
                 stackTraceData.frames.add(frameData);
             } else if(line.contains('AnonymousBlock')) {
-                System.debug('Got AnonymousBlock: '+ line);
                 p = Pattern.compile('AnonymousBlock: line ([0-9]+), column ([0-9]+)');
                 m = p.matcher(line);
                 // Sample: Class.SampleClass1: line 595, column 1
                 if (m.find()) 
                 {
-                    System.debug('@@m:--'+m);
                     SentryEvent.FrameData frameData = new SentryEvent.FrameData();
                     frameData.res_class = 'Anonymous Console';
                     frameData.filename = '';
@@ -66,9 +63,7 @@ public class ErrorPayloadBuilder implements PayloadBuilder {
                 // Sample: Class.SampleClass1: line 595, column 1
                 if (m.find()) 
                 {
-                    System.debug('@@m:--'+m);
                     
-
                     SentryEvent.FrameData frameData = new SentryEvent.FrameData();
                     frameData.res_class = m.group(1);
                     frameData.filename = m.group(1) + '.cls';
@@ -86,21 +81,14 @@ public class ErrorPayloadBuilder implements PayloadBuilder {
                 }
             }
         }
-        System.debug('GOT ' + stackTraceData.frames.size() + ' lines of Stacktrace NXS');
-        System.debug(stackTraceData.frames);
 
+        if(stackTraceData.frames.size() > 0) {
+            exceptionValueData.line_number = stackTraceData.frames[0].lineno;
+        }
+        
         exceptionValueData.stacktrace = stackTraceData;
         eventData.values.add(exceptionValueData);
         event.res_exception = eventData;
-
-        //exceptionDataStack.put('frames', frames);
-        //event.stac
-        //exceptionData.put('stacktrace', exceptionDataStack);
-
-        // add "value" in exceptionData
-        //exceptionData.put('value', ex.getTypeName()+' '+ex.getMessage());
-        //exceptionData.put('cause', ex.getCause());
-        //exceptionData.put('line_number', ex.getLineNumber());
 
         return event;
     }

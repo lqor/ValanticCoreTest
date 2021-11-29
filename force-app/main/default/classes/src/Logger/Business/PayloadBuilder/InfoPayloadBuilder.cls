@@ -14,7 +14,6 @@ public class InfoPayloadBuilder implements PayloadBuilder {
 
         event.message = msgData;
         
-    
         return event;
     }
 }

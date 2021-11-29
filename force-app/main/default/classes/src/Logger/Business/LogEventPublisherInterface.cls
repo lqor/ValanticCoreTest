@@ -1,7 +1,5 @@
 public interface LogEventPublisherInterface {
     
-    void logError(Exception ex);
-
     void logError(String title, Exception ex);
 
     void logWarning(String title, String warning);

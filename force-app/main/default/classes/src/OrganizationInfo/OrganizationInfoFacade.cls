@@ -1,9 +1,11 @@
 global class OrganizationInfoFacade  extends Facade{
     
+    @TestVisible
     private OrganizationInfoResolver organizationInfoResolver;
 
     override global void init() {
-        this.organizationInfoResolver = new OrganizationInfoResolver();
+        OrganizationReadRepositoryInterface organizationReadRepository = new OrganizationReadRepository();
+        this.organizationInfoResolver = new OrganizationInfoResolver(organizationReadRepository);
     }
 
     global OrganizationInfoData getInfo() {

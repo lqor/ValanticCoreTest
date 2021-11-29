@@ -10,10 +10,6 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
         this.logEvents = new List<LogEntryEvent__e>();
     }
 
-    public void logError(Exception ex) {
-        this.logError(ex.getTypeName(), ex);
-    }
-
     public void logError(String title, Exception ex) {
         
         LogEntryEvent__e log = new LogEntryEvent__e();
@@ -66,7 +62,7 @@ public with sharing class LogEventPublisher implements LogEventPublisherInterfac
 
     private Boolean shouldSendToSentry(String type, String msg) {
         
-        if (!this.configReadRepository.isActive()) {
+        if (!Test.isRunningTest() && !this.configReadRepository.isActive()) {
             System.debug(
                 String.format(
                     LoggerConstants.MSG_SF_LOG,
