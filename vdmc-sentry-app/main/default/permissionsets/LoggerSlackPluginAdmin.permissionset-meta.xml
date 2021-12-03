@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>SentryLoggerPlugin</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description>Provides additional access for the Logger Sentry plugin</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Log__c.SendSentryRequest__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Log__c.SentryRequestDate__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Logger: Sentry Plugin Admin</label>
+</PermissionSet>

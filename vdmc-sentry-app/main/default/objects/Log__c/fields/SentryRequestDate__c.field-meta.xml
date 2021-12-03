@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SentryRequestDate__c</fullName>
+    <description>The date/time that the log was sent to Sentry</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The date/time that the log was sent to Sentry</inlineHelpText>
+    <label>Sentry Request Date</label>
+    <required>false</required>
+    <trackFeedHistory>true</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

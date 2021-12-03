@@ -8,7 +8,8 @@ global class Container implements ContainerInterface{
      * @return service Returns the requested service
      */
     global Facade get(Type type) {
-        
+        Logger.error('TEST ERROR FROM CLASS');
+        Logger.saveLog();
         if(!facades.containsKey(type)){
             Facade facade;
             try{
