@@ -157,10 +157,10 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 (
                     SELECT Id, LoggingLevel__c, Message__c, LoggingLevelOrdinal__c, ExceptionType__c,
                      ExceptionMessage__c, ExceptionStackTrace__c, HasException__c, HasExceptionStackTrace__c,
-                     StackTrace__c, Origin__c, LimitsAggregateQueries__c, LimitsAsyncCalls__c,
+                     HasStackTrace__c, StackTrace__c, Origin__c, LimitsAggregateQueries__c, LimitsAsyncCalls__c,
                      LimitsCallouts__c, LimitsCpuTime__c, LimitsDmlRows__c, LimitsDmlStatements__c,
                      LimitsFutureCalls__c, LimitsHeapSize__c, LimitsQueueableJobs__c,
-                     LimitsSoqlQueries__c, LimitsSoqlQueryRows__c
+                     LimitsSoqlQueries__c, LimitsSoqlQueryRows__c, Timestamp__c
                     FROM LogEntries__r
                     WHERE LoggingLevelOrdinal__c >= :SENTRY_LOGGING_LEVEL.ordinal()
                     ORDER BY TransactionEntryNumber__c ASC
@@ -181,7 +181,6 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
         event.tags = this.buildTags(log);
         
         event.event_id = new Uuid().getValue().toLowerCase();
-        event.res_transaction = log.TransactionId__c;
         event.timestamp = log.StartTime__c;
         event.platform = 'SALESFORCE';
         event.environment = log.OrganizationEnvironmentType__c;
@@ -197,15 +196,21 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 }
 
                 event.res_exception.values.add(this.buildExceptionPayload(logEntry));
-            }else{
-                if(event.message == null) {
-                    event.message = new SentryEventData.MessageData();
-                    event.message.message = '';
-                }else{
-                    event.message.message += '\n';
-                }
-                event.message.message += '['+ logEntry.LoggingLevel__c + '] ' + logEntry.Message__c;
+                event.res_transaction = logEntry.Origin__c;
             }
+            
+            if(event.message == null) {
+                event.message = new SentryEventData.MessageData();
+                event.message.message = '';
+            }else{
+                event.message.message += '\n';
+            }
+
+            event.message.message += '[' + logEntry.Timestamp__c +']['+ logEntry.LoggingLevel__c + '] ' + logEntry.Message__c;
+        }
+
+        if(String.isEmpty(event.res_transaction)) {
+            event.res_transaction = log.LogEntries__r.get(log.LogEntries__r.size() -1).Origin__c;
         }
         
         return event;
@@ -220,8 +225,16 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
         exceptionValueData.value = logEntry.HasException__c ?logEntry.ExceptionMessage__c:logEntry.Message__c;
         exceptionValueData.mechanism = this.buildExceptionMechamismData(logEntry);
         stackTraceData.frames = new List<SentryEventData.FrameData>();
-        List<String> lines = logEntry.HasExceptionStackTrace__c ?
-            logEntry.ExceptionStackTrace__c.split('\n'):logEntry.StackTrace__c.split('\n');
+       
+        List<String> lines;
+        
+        if(logEntry.HasExceptionStackTrace__c) {
+            lines = logEntry.ExceptionStackTrace__c.split('\n');
+        }else if(logEntry.HasStackTrace__c) {
+            lines = logEntry.StackTrace__c.split('\n');
+        }else {
+            lines = new List<String>();
+        }
 
         for (Integer i = lines.size() - 1; i >= 0; i--) {
             String line = lines[i];
@@ -235,7 +248,7 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 frameData.filename = m.group(1) + '.cls';
                 frameData.function = m.group(1) + '.' + m.group(2) + ', line ' + m.group(3);
                 frameData.lineno = Integer.valueOf(m.group(3));
-                frameData.column =Integer.valueOf(m.group(4));
+                frameData.column = Integer.valueOf(m.group(4));
                 frameData.in_app = true;
                 frameData.vars = new Map<String, Object> {
                     'column' => frameData.column,
@@ -331,7 +344,6 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
     private SentryEventData.MechanismData buildExceptionMechamismData(LogEntry__c logEntry) {
         SentryEventData.MechanismData mechanismData = new SentryEventData.MechanismData();
         SentryEventData.LimitData limitData = new SentryEventData.LimitData();
-        mechanismData.handled = true;
         mechanismData.type = 'limits';
 
         limitData.aggregate_queries = logEntry.LimitsAggregateQueries__c;

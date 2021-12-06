@@ -77,7 +77,6 @@ public class SentryEventData{
 
     public class MechanismData {
         public String type;
-        public Boolean handled;
         public LimitData data;
     }
 
