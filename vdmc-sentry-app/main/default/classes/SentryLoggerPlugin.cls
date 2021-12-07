@@ -10,10 +10,11 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
     private static String SENTRY_URL = LoggerParameter.getString('SentryUrl', null);
     private static Integer SENTRY_VERIONS = 7;
 
-
+    private SentryPayloadBuilder sentryPayloadBuilder;
     private List<Log__c> logs;
 
     public SentryLoggerPlugin() {
+        this.sentryPayloadBuilder = new SentryPayloadBuilder();
     }
 
     private SentryLoggerPlugin(List<Log__c> unsentLogs) {
@@ -71,8 +72,8 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 unsentLogs.add(log);
             } else {
 
-                SentryEventData.EventData sentryEvent = this.buildPayload(log);
-                String payload = JSON.serialize(buildPayload(log)).replaceAll('"res_', '"');
+                SentryEventData.EventData sentryEvent = this.sentryPayloadBuilder.buildPayload(log);
+                String payload = JSON.serialize(sentryEvent).replaceAll('"res_', '"');
         
                 HttpResponse response = this.postData(this.getStoreEndpoint(), this.getSecurityHeader(), payload);
 
@@ -174,195 +175,6 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
         ];
     }
 
-    private SentryEventData.EventData buildPayload(Log__c log) {
-        SentryEventData.EventData event = new SentryEventData.EventData();
-
-        event.user = this.buildUserPayload(log);
-        event.tags = this.buildTags(log);
-        
-        event.event_id = new Uuid().getValue().toLowerCase();
-        event.timestamp = log.StartTime__c;
-        event.platform = 'SALESFORCE';
-        event.environment = log.OrganizationEnvironmentType__c;
-        event.level = this.getSentryEventType(log.MaxLogEntryLoggingLevelOrdinal__c.intValue()).name().toLowerCase(); //Todo: Translate to SF types
-        event.server_name = log.OrganizationDomainUrl__c;
-
-        for(LogEntry__c logEntry:log.LogEntries__r) {
-            SentryEventData.EventType entryType = this.getSentryEventType(logEntry.LoggingLevelOrdinal__c.intValue());
-            if(entryType.ordinal() >= SentryEventData.EventType.ERROR.ordinal() || logEntry.HasException__c) {
-                if(event.res_exception == null) {
-                    event.res_exception = new SentryEventData.ExceptionData();
-                    event.res_exception.values = new List<SentryEventData.ExceptionValueData>();
-                }
-
-                event.res_exception.values.add(this.buildExceptionPayload(logEntry));
-                event.res_transaction = logEntry.Origin__c;
-            }
-            
-            if(event.message == null) {
-                event.message = new SentryEventData.MessageData();
-                event.message.message = '';
-            }else{
-                event.message.message += '\n';
-            }
-
-            event.message.message += '[' + logEntry.Timestamp__c +']['+ logEntry.LoggingLevel__c + '] ' + logEntry.Message__c;
-        }
-
-        if(String.isEmpty(event.res_transaction)) {
-            event.res_transaction = log.LogEntries__r.get(log.LogEntries__r.size() -1).Origin__c;
-        }
-        
-        return event;
-    }
-
-    private SentryEventData.ExceptionValueData buildExceptionPayload(LogEntry__c logEntry) {
-        SentryEventData.ExceptionValueData exceptionValueData = new SentryEventData.ExceptionValueData();
-        SentryEventData.StackTraceData stackTraceData = new SentryEventData.StackTraceData();
-
-        exceptionValueData.type = String.isEmpty(logEntry.ExceptionType__c)?'Error': logEntry.ExceptionType__c;
-        exceptionValueData.module = logEntry.Origin__c;
-        exceptionValueData.value = logEntry.HasException__c ?logEntry.ExceptionMessage__c:logEntry.Message__c;
-        exceptionValueData.mechanism = this.buildExceptionMechamismData(logEntry);
-        stackTraceData.frames = new List<SentryEventData.FrameData>();
-       
-        List<String> lines;
-        
-        if(logEntry.HasExceptionStackTrace__c) {
-            lines = logEntry.ExceptionStackTrace__c.split('\n');
-        }else if(logEntry.HasStackTrace__c) {
-            lines = logEntry.StackTrace__c.split('\n');
-        }else {
-            lines = new List<String>();
-        }
-
-        for (Integer i = lines.size() - 1; i >= 0; i--) {
-            String line = lines[i];
-            Pattern p = Pattern.compile('Class\\.([^\\.]+)\\.([^:]+): line ([0-9]+), column ([0-9]+)');
-            Matcher m = p.matcher(line);
-            // Sample: Class.SampleClass.execute: line 36, column 1
-            if (m.find()) 
-            {
-                SentryEventData.FrameData frameData = new SentryEventData.FrameData();
-                frameData.res_class = m.group(1);
-                frameData.filename = m.group(1) + '.cls';
-                frameData.function = m.group(1) + '.' + m.group(2) + ', line ' + m.group(3);
-                frameData.lineno = Integer.valueOf(m.group(3));
-                frameData.column = Integer.valueOf(m.group(4));
-                frameData.in_app = true;
-                frameData.vars = new Map<String, Object> {
-                    'column' => frameData.column,
-                    'line' => frameData.lineno,
-                    'class'=> frameData.res_class,
-                    'function' => frameData.function
-                };
-                stackTraceData.frames.add(frameData);
-            } else if(line.contains('AnonymousBlock')) {
-                p = Pattern.compile('AnonymousBlock: line ([0-9]+), column ([0-9]+)');
-                m = p.matcher(line);
-                // Sample: Class.SampleClass1: line 595, column 1
-                if (m.find()) 
-                {
-                    SentryEventData.FrameData frameData = new SentryEventData.FrameData();
-                    frameData.res_class = 'Anonymous Console';
-                    frameData.filename = '';
-                    frameData.function = 'AnonymousBlock' + ', line ' + m.group(1);
-                    frameData.lineno = Integer.valueOf(m.group(1));
-                    frameData.column =Integer.valueOf(m.group(2));
-                    frameData.in_app = true;
-                    frameData.vars = new Map<String, Object> {
-                        'column' => frameData.column,
-                        'line' => frameData.lineno,
-                        'class'=> frameData.res_class,
-                        'function' => frameData.function
-                    };
-                    stackTraceData.frames.add(frameData);
-                }
-            } else {
-                p = Pattern.compile('Class\\.([^\\.]+): line ([0-9]+), column ([0-9]+)');
-                m = p.matcher(line);
-                // Sample: Class.SampleClass1: line 595, column 1
-                if (m.find()) 
-                {
-                    
-                    SentryEventData.FrameData frameData = new SentryEventData.FrameData();
-                    frameData.res_class = m.group(1);
-                    frameData.filename = m.group(1) + '.cls';
-                    frameData.function = m.group(1) + ', line ' + m.group(2);
-                    frameData.lineno = Integer.valueOf(m.group(2));
-                    frameData.column =Integer.valueOf(m.group(3));
-                    frameData.in_app = true;
-                    frameData.vars = new Map<String, Object> {
-                        'column' => frameData.column,
-                        'line' => frameData.lineno,
-                        'class'=> frameData.res_class,
-                        'function' => frameData.function
-                    };
-                    stackTraceData.frames.add(frameData);
-                }
-            }
-        }
-
-        if(stackTraceData.frames.size() > 0) {
-            exceptionValueData.line_number = stackTraceData.frames[0].lineno;
-        }
-        
-        exceptionValueData.stacktrace = stackTraceData;
-        
-        return exceptionValueData;
-    }
-
-
-    private SentryEventData.UserData buildUserPayload(Log__c log) {
-        SentryEventData.UserData userData = new SentryEventData.UserData();
-
-        userData.id = log.OwnerId;
-        userData.email = log.LoggedBy__r.Email; //todo: resolve correct mail
-        userData.ip_address = log.SourceIp__c;
-        userData.username = log.LoggedBy__r.Username;
-        userData.username_url = log.OrganizationDomainUrl__c + '/' + log.OwnerId;
-        userData.profile = log.ProfileName__c;
-        userData.user_type = log.UserType__c;
-        userData.locale = log.Locale__c;
-        userData.license = log.UserLicenseName__c;
-        userData.license_definition_key = log.UserLicenseDefinitionKey__c;
-
-        return userData;
-    }
-
-    private SentryEventData.SentryTags buildTags(Log__c log) {
-        SentryEventData.SentryTags tags = new SentryEventData.SentryTags();
-
-        tags.type = this.getSentryEventType(log.MaxLogEntryLoggingLevelOrdinal__c.intValue()).name().toLowerCase();
-        tags.instance_name = log.OrganizationInstanceName__c;
-        tags.api_version = log.ApiVersion__c;
-        tags.api_release_version = log.ApiReleaseVersion__c;
-
-        return tags;
-    }
-
-    private SentryEventData.MechanismData buildExceptionMechamismData(LogEntry__c logEntry) {
-        SentryEventData.MechanismData mechanismData = new SentryEventData.MechanismData();
-        SentryEventData.LimitData limitData = new SentryEventData.LimitData();
-        mechanismData.type = 'limits';
-
-        limitData.aggregate_queries = logEntry.LimitsAggregateQueries__c;
-        limitData.async_calls = logEntry.LimitsAsyncCalls__c;
-        limitData.callouts = logEntry.LimitsCallouts__c;
-        limitData.cpu_time = logEntry.LimitsCpuTime__c;
-        limitData.dml_rows = logEntry.LimitsDmlRows__c;
-        limitData.dml_statements = logEntry.LimitsDmlStatements__c;
-        limitData.future_calls = logEntry.LimitsFutureCalls__c;
-        limitData.heap_size = logEntry.LimitsHeapSize__c;
-        limitData.queueable_jobs = logEntry.LimitsQueueableJobs__c;
-        limitData.soql_queries = logEntry.LimitsSoqlQueries__c;
-        limitData.soql_query_rows = logEntry.LimitsSoqlQueryRows__c;
-
-        mechanismData.data = limitData;
-
-        return mechanismData;
-    }
-
     private HttpResponse postData(String endpoint, String securityHeader, String payload) {
         HttpRequest request;
         Http http = new Http();
@@ -395,18 +207,4 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 SENTRY_KEY//'7ded4c6396c64aac92a0e70f90a01e36'//this.configReadRepository.getSentryKey()
             });
     }
-
-    private SentryEventData.EventType getSentryEventType(Integer loggingLevelOrdinal) {
-        
-        if(loggingLevelOrdinal >= 8) {
-            return SentryEventData.EventType.ERROR;
-        }else if(loggingLevelOrdinal >= 7) {
-            return SentryEventData.EventType.WARNING;
-        }else if(loggingLevelOrdinal >= 6) {
-            return SentryEventData.EventType.INFO;
-        }
-
-        return SentryEventData.EventType.DEBUG;
-    }
-
 }
