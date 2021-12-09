@@ -22,8 +22,6 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
         this.logs = unsentLogs;
     }
 
-    // Instance methods
-
     /**
      * @description Handles the queuable execute logic.
      * @param triggerOperationType Defines the trigger operation type

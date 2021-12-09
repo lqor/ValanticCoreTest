@@ -120,11 +120,11 @@ public class SentryPayloadBuilder {
     private SentryEventData.UserData buildUserPayload(Log__c log) {
         SentryEventData.UserData userData = new SentryEventData.UserData();
 
-        userData.id = log.OwnerId;
+        userData.id = log.LoggedBy__c;
         userData.email = log.LoggedBy__r.Email;
         userData.ip_address = log.SourceIp__c;
         userData.username = log.LoggedBy__r.Username;
-        userData.username_url = log.OrganizationDomainUrl__c + '/' + log.OwnerId;
+        userData.username_url = log.OrganizationDomainUrl__c + '/' + log.LoggedBy__c;
         userData.profile = log.ProfileName__c;
         userData.user_type = log.UserType__c;
         userData.locale = log.Locale__c;

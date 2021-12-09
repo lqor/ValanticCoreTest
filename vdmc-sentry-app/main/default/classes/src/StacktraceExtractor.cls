@@ -79,11 +79,11 @@ public abstract class StacktraceExtractor {
             {
                 frameData = new SentryEventData.FrameData();
                 frameData.res_class = 'Anonymous Console';
-                frameData.filename = '';
+                frameData.filename = 'AnonymousBlock';
                 frameData.function = 'AnonymousBlock' + ', line ' + m.group(1);
                 frameData.lineno = Integer.valueOf(m.group(1));
                 frameData.column =Integer.valueOf(m.group(2));
-                frameData.in_app = true;
+                frameData.in_app = false;
                 frameData.vars = new Map<String, Object> {
                     'column' => frameData.column,
                     'line' => frameData.lineno,
