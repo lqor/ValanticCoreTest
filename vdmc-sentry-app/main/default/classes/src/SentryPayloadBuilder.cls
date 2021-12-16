@@ -54,7 +54,6 @@ public class SentryPayloadBuilder {
             }
 
             event.message.message += String.format(SentryConstants.LOG_SYNTAX, new List<Object> {
-                logEntry.Timestamp__c,
                 logEntry.LoggingLevel__c,
                 logEntry.Message__c
             });
