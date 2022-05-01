@@ -5,7 +5,7 @@
             "path": "vdmc-sentry-app",
             "dependencies": [
                 {
-                    "package": "Nebula Logger - Unlocked Package@4.6.13-0-save-method-support-for-flows-and-lightning-components"
+                    "package": "Nebula Logger - Unlocked Package@4.7.0.1"
                 }
             ],
             "versionName": "Alpha",
@@ -18,13 +18,10 @@
             "path": "vdmc-core-app",
             "dependencies": [
                 {
-                    "package": "Nebula Logger - Unlocked Package@4.6.13-0-save-method-support-for-flows-and-lightning-components"
+                    "package": "Nebula Logger - Unlocked Package@4.7.0.1"
                 },
                 {
                     "package": "Nebula Logger Plugin - Sentry@0.1.0-0"
-                },
-                {
-                    "package": "Nebula Logger Plugin - Slack@0.9.2-0-beta-release-round-3"
                 }
             ],
             "versionNumber": "1.0.0",
@@ -37,8 +34,7 @@
     "sourceApiVersion": "53.0",
     "packageAliases": {
         "DependencyInjection": "0Ho09000000sY7PCAU",
-        "Nebula Logger - Unlocked Package@4.6.13-0-save-method-support-for-flows-and-lightning-components": "04t5Y0000015l4cQAA",
-        "Nebula Logger Plugin - Logger Admin Dashboard@0.9.0-0": "04t5Y0000015l3yQAA",
-        "Nebula Logger Plugin - Slack@0.9.2-0-beta-release-round-3": "04t5Y0000015l2WQAQ"
+        "Nebula Logger - Unlocked Package@4.7.0.1": "04t5Y0000015lXSQAY",
+        "Nebula Logger Plugin - Logger Admin Dashboard@0.9.0-0": "04t5Y0000015l3yQAA"
     }
 }
