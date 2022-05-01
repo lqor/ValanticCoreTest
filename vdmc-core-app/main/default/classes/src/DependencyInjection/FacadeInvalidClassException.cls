@@ -1,4 +1,4 @@
-global class FacadeInvalidClassException extends Exception{
+public class FacadeInvalidClassException extends Exception{
     
     public FacadeInvalidClassException(Type type, Exception e) {
         this(String.format(

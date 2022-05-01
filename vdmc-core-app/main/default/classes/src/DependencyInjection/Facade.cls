@@ -1,15 +1,15 @@
-global abstract class Facade {
+public abstract class Facade {
     
 
     private ContainerInterface container;
 
-    global Facade(){}
+    public Facade(){}
     
 
     /**
      * Gets called after init of facade
      */
-    abstract global void init();
+    abstract public void init();
 
     /**
      * @return container Returns the Container Dependency Injection

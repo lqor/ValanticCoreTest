@@ -1,4 +1,4 @@
-global @isTest class TestOrganizationInfoFacade {
+public @isTest class TestOrganizationInfoFacade {
     
     @isTest static void testOrgDependedGetInfo() {
         ContainerInterface container = Container.getDi();

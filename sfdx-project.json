@@ -27,6 +27,13 @@
             ],
             "versionNumber": "0.0.1.NEXT",
             "default": true
+        },
+        {
+            "package": "VdmcExample",
+            "path": "vdmc-example-app",
+            "versionName": "VdmcExample",
+            "versionNumber": "0.0.1.NEXT",
+            "default": false
         }
     ],
     "name": "vdmc-core",

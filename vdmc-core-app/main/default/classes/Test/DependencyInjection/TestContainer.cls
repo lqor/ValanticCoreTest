@@ -1,4 +1,4 @@
-global @isTest class TestContainer {
+public @isTest class TestContainer {
     
 
     @isTest static void testGetFacade() {
@@ -30,34 +30,34 @@ global @isTest class TestContainer {
     }
 
 
-    global class TestFacadeA extends Facade {
+    public class TestFacadeA extends Facade {
         private TestFacadeB facadeB;
 
-        global override void init() {
+        public override void init() {
             this.facadeB = (TestFacadeB) this.getContainer().get(TestFacadeB.class);
         }
 
-        global Integer incrementCounter() {
+        public Integer incrementCounter() {
             return this.facadeB.incrementCounter();
         }
     }
 
-    global class TestFacadeB extends Facade {
+    public class TestFacadeB extends Facade {
         private Integer counter = 5;
 
-        global override void init() {
+        public override void init() {
             this.counter = 10;
         }
 
-        global Integer incrementCounter() {
+        public Integer incrementCounter() {
             return ++this.counter;
         }
     }
 
-    global class TestFacadeError extends Facade {
+    public class TestFacadeError extends Facade {
         
 
-        global override void init() {
+        public override void init() {
             throw new CalloutException('Test');
         }
     }

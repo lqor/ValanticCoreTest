@@ -25,7 +25,7 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
     List<TriggersOfAwesome__mdt> triggerHandlersToRun = [
       SELECT Execution_Order__c, Class_Name__c
       FROM TriggersOfAwesome__mdt
-      WHERE sObjectType__c = :firedOnsObjectType
+      WHERE sObjectType__c = :firedOnsObjectType AND Active__c = true
       ORDER BY Execution_Order__c
     ];
 
