@@ -12,4 +12,4 @@ package.xml
 **/__tests__/**
 
 #Ignore-Example
-#**/vdmc-example-app/*
+**/vdmc-example-app/*
