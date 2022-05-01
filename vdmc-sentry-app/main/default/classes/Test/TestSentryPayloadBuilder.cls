@@ -20,7 +20,7 @@ private class TestSentryPayloadBuilder {
         System.assert(event.res_exception.values.size() != 0);
         System.assert(event.res_exception.values.get(0).stacktrace.frames.size() != 0);
         
-        System.assertEquals('53.0', event.tags.api_version);
+        System.assertEquals('54.0', event.tags.api_version);
         System.assertEquals('SF 236', event.tags.api_release_version);
         System.assertEquals('Test', event.tags.instance_name);
         System.assertEquals('error', event.tags.type);
@@ -109,7 +109,7 @@ private class TestSentryPayloadBuilder {
     private static Log__c buildLogTagsData(Log__c log){
         
         log.OrganizationInstanceName__c = 'Test';
-        log.ApiVersion__c = '53.0';
+        log.ApiVersion__c = '54.0';
         log.ApiReleaseVersion__c = 'SF 236';
 
         return log;

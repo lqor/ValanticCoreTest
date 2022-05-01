@@ -135,7 +135,7 @@ private class  TestSentryLoggerPlugin {
     private static Log__c buildLogTagsData(Log__c log){
         
         log.OrganizationInstanceName__c = 'Test';
-        log.ApiVersion__c = '53.0';
+        log.ApiVersion__c = '54.0';
         log.ApiReleaseVersion__c = 'SF 236';
 
         return log;
