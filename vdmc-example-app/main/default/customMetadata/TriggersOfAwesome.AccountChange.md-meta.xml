@@ -4,7 +4,7 @@
     <protected>false</protected>
     <values>
         <field>Class_Name__c</field>
-        <value xsi:type="xsd:string">BoatyMcBoatFaceTriggerHandler</value>
+        <value xsi:type="xsd:string">AccountChangeTriggerHandler</value>
     </values>
     <values>
         <field>Execution_Order__c</field>
