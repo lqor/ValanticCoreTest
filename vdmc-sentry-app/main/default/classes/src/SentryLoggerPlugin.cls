@@ -37,6 +37,11 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
         List<SObject> triggerOld,
         Map<Id, SObject> triggerOldMap
     ) {
+
+        if(!this.isConfigured()) {
+            return;
+        }
+
         this.logs = (List<Log__c>) triggerNew;
 
         switch on triggerOperationType {
@@ -204,5 +209,12 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 SENTRY_VERIONS, //7 //this.configReadRepository.getSentryVersion(),
                 SENTRY_KEY//'7ded4c6396c64aac92a0e70f90a01e36'//this.configReadRepository.getSentryKey()
             });
+    }
+
+    private Boolean isConfigured() {
+        if(String.isBlank(SENTRY_URL) || String.isBlank(SENTRY_PROJECT_ID) || String.isBlank(SENTRY_KEY)) {
+            return false;
+        }
+        return true;
     }
 }
