@@ -8,18 +8,15 @@ private class  TestSentryLoggerPlugin {
 
     static void mockConfigurations() {
         // Set the plugin's parameters
-        LoggerPlugin__mdt slackPluginConfig = new LoggerPlugin__mdt(
-            IsEnabled__c = true,
-            PluginApiName__c = SentryLoggerPlugin.class.getName(),
-            PluginType__c = 'Apex'
-        );
-        LoggerSObjectHandler.setMockPlugin(Schema.Log__c.SObjectType, slackPluginConfig);
 
-        // Set the plugin's internal variables
-        SentryLoggerPlugin.SENTRY_LOGGING_LEVEL = LoggingLevel.INFO;
-        SentryLoggerPlugin.SENTRY_KEY = 'TEST_KEY';
-        SentryLoggerPlugin.SENTRY_PROJECT_ID = 'TEST_PROJECT_ID';
-        SentryLoggerPlugin.SENTRY_URL = 'https://sentry.io';
+        LoggerTestConfigurator.setMock(
+            new LoggerPlugin__mdt(DeveloperName = 'SentryPlugin', IsEnabled__c = true, SObjectHandlerApexClass__c = SentryLoggerPlugin.class.getName())
+        );
+        LoggerTestConfigurator.setMock(new LoggerParameter__mdt(DeveloperName = 'SentryRequestLoggingLevel', Value__c = LoggingLevel.INFO.name()));
+        LoggerTestConfigurator.setMock(new LoggerParameter__mdt(DeveloperName = 'SentryKey', Value__c = 'TEST_KEY'));
+        LoggerTestConfigurator.setMock(new LoggerParameter__mdt(DeveloperName = 'SentryProjectId', Value__c = 'TEST_PROJECT_ID'));
+        LoggerTestConfigurator.setMock(new LoggerParameter__mdt(DeveloperName = 'SentryUrl', Value__c = 'https://sentry.io'));
+
     }
 
     /**
