@@ -1,4 +1,4 @@
-global class Container implements ContainerInterface{
+public class Container implements ContainerInterface{
     
     private static Container instance;
     private static final Map<Type, Facade> facades = new Map<Type, Facade>();
@@ -7,9 +7,7 @@ global class Container implements ContainerInterface{
      * @param type Type of the requested service
      * @return service Returns the requested service
      */
-    global Facade get(Type type) {
-        Logger.error('TEST ERROR FROM CLASS');
-        Logger.saveLog();
+    public Facade get(Type type) {
         if(!facades.containsKey(type)){
             Facade facade;
             try{
@@ -33,7 +31,7 @@ global class Container implements ContainerInterface{
         return facades.get(type);
     }
 
-    global static ContainerInterface getDi() {
+    public static ContainerInterface getDi() {
         if(instance == null){
             instance = new Container();
         }

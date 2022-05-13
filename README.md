@@ -1,18 +1,19 @@
-# Salesforce DX Project: Next Steps
+# Vdmc-Core
+This package contains the vdmc-core setup for Apex development. It contains DI, trigger framework over several packages up to the Nebula logger with Sentry integration.
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Dependency Injection
+Dependency injection provides a pattern for larger custom software solutions. It forces the developer
+to access the business logic only through a facade. The facade itself can be fetched via Dependency Injection
+from anywhere. All retrieved services are cached for the current session. This enables the reduction of unneeded,
+class initialization.
 
-## How Do You Plan to Deploy Your Changes?
+## Trigger Framework (forked from [codefriar](https://github.com/codefriar/DecouplingWithSimonGoodyear))
+Based on the trigger framework from codefriar, it includes additional changes. It includes feature toggles for specific TriggerHandler
+via the "Active__c" flag on the MDT object.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Nebula-Logger (used from [jongpie](https://github.com/jongpie/NebulaLogger))
+Take a look at the linked repository. It's just a great logging framework that Salesforce never had.
 
-## Configure Your Salesforce DX Project
-
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
-
-## Read All About It
-
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+### Sentry Integration
+Own implementation to also transmit occuring events to sentry. It simply allows to better monitor multiple
+environments.

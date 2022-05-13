@@ -1,4 +1,4 @@
-global class OrganizationInfoData {
+public class OrganizationInfoData {
     
 
     public OrganizationType type;

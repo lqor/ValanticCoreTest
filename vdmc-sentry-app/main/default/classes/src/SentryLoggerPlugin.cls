@@ -1,12 +1,8 @@
-public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlugin implements Queueable, Database.AllowsCallouts {
+public without sharing class SentryLoggerPlugin implements LoggerPlugin.Triggerable, Queueable, Database.AllowsCallouts {
     
-    @TestVisible
     private static LoggingLevel SENTRY_LOGGING_LEVEL = Logger.getLoggingLevel(LoggerParameter.getString('SentryRequestLoggingLevel', null));
-    @TestVisible
     private static String SENTRY_KEY = LoggerParameter.getString('SentryKey', null);
-    @TestVisible
     private static String SENTRY_PROJECT_ID = LoggerParameter.getString('SentryProjectId', null);
-    @TestVisible
     private static String SENTRY_URL = LoggerParameter.getString('SentryUrl', null);
     private static Integer SENTRY_VERIONS = 7;
 
@@ -23,23 +19,19 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
     }
 
     /**
-     * @description Handles the queuable execute logic.
-     * @param triggerOperationType Defines the trigger operation type
-     * @param triggerNew contains a list of the new trigger context / records.
-     * @param triggerNewMap contains a map of ids to new trigger records.
-     * @param triggerOld old contains a list of the old trigger context / records.
-     * @param triggerOldMap contains a map of ids to old trigger records.
+     * @description Handles the integration with Slack. This method is automatically called by Nebula Logger's plugin framework.
+     * @param  configuration The instance of `LoggerPlugin__mdt` configured for this specific plugin
+     * @param  input The instance of `LoggerTriggerableContext`, provided by the logging system
      */
-    public override void execute(
-        TriggerOperation triggerOperationType,
-        List<SObject> triggerNew,
-        Map<Id, SObject> triggerNewMap,
-        List<SObject> triggerOld,
-        Map<Id, SObject> triggerOldMap
-    ) {
-        this.logs = (List<Log__c>) triggerNew;
+    public void execute(LoggerPlugin__mdt configuration, LoggerTriggerableContext input) {
 
-        switch on triggerOperationType {
+        if(input.sobjectType != Schema.Log__c.SObjectType || !this.isConfigured()) {
+            return;
+        }
+
+        this.logs = (List<Log__c>) input.triggerNew;
+
+        switch on input.triggerOperationType {
             when BEFORE_INSERT, BEFORE_UPDATE {
                 this.flagLogsForSentryNotification();
             }
@@ -204,5 +196,12 @@ public without sharing class SentryLoggerPlugin extends LoggerSObjectHandlerPlug
                 SENTRY_VERIONS, //7 //this.configReadRepository.getSentryVersion(),
                 SENTRY_KEY//'7ded4c6396c64aac92a0e70f90a01e36'//this.configReadRepository.getSentryKey()
             });
+    }
+
+    private Boolean isConfigured() {
+        if(String.isBlank(SENTRY_URL) || String.isBlank(SENTRY_PROJECT_ID) || String.isBlank(SENTRY_KEY)) {
+            return false;
+        }
+        return true;
     }
 }
