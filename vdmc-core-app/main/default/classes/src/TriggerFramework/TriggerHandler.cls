@@ -197,7 +197,7 @@ public virtual class TriggerHandler {
 
   @TestVisible
   private String getHandlerName() {
-    return String.valueOf(this).substring(0, String.valueOf(this).indexOf(':'));
+    return this.toString().substringBefore(':');
   }
 
   /***************************************
