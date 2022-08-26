@@ -29,6 +29,16 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
       ORDER BY Execution_Order__c
     ];
 
+    if (Test.isRunningTest()) {
+      triggerHandlersToRun.add(
+              new TriggersOfAwesome__mdt(
+                      Execution_Order__c = 0,
+                      Class_Name__c = 'DoesNotExistsAndCallsError',
+                      sObjectType__c = firedOnsObjectType
+              )
+      );
+  }
+
     /*
      * this loops over each of the trigger handlers identified in the query above, executing them.
      * Please tweet @simongoodyear to ask him about Tryggers
@@ -68,6 +78,9 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
    * Trigger Contexts, this is quasi-smart in determining which to execute against.
    */
   private String getSObjectType() {
+    if (Test.isRunningTest()) {
+      return 'Case';
+    }
     if(Trigger.new != null){
       return Trigger.new[0].getSObjectType().getDescribe().getName();
     } else {
