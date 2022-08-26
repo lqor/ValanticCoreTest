@@ -8,6 +8,8 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
    * trigger logic, we're overriding the run() method here to find and execute
    * the metadata designated trigger logic.
   */
+  @TestVisible
+  private Boolean SELF_TEST = false;
 
   public override void run() {
     /*
@@ -29,7 +31,7 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
       ORDER BY Execution_Order__c
     ];
 
-    if (Test.isRunningTest()) {
+    if (Test.isRunningTest() && SELF_TEST) {
       triggerHandlersToRun.add(
               new TriggersOfAwesome__mdt(
                       Execution_Order__c = 0,
@@ -78,7 +80,7 @@ public with sharing class CustomMDTTriggerHandler extends TriggerHandler {
    * Trigger Contexts, this is quasi-smart in determining which to execute against.
    */
   private String getSObjectType() {
-    if (Test.isRunningTest()) {
+    if (Test.isRunningTest() && SELF_TEST) {
       return 'Case';
     }
     if(Trigger.new != null){
