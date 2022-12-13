@@ -1,39 +1,11 @@
 {
     "packageDirectories": [
         {
-            "package": "Nebula Logger Plugin - VdmcSentry",
-            "path": "vdmc-sentry-app",
-            "dependencies": [
-                {
-                    "package": "Nebula Logger - Unlocked Package@4.7.1.1"
-                }
-            ],
-            "versionName": "Alpha",
-            "versionNumber": "0.0.1.NEXT",
-            "versionDescription": "Initial Sentry integration for Nebula Logger",
-            "default": false
-        },
-        {
-            "package": "VdmcCore",
             "path": "vdmc-core-app",
-            "dependencies": [
-                {
-                    "package": "Nebula Logger - Unlocked Package@4.7.1.1"
-                },
-                {
-                    "package": "Nebula Logger Plugin - VdmcSentry",
-                    "versionNumber": "0.0.1.LATEST"
-                }
-            ],
-            "versionNumber": "0.0.1.NEXT",
+            "package": "VdmcCorePackage",
+            "versionName": "ver 1.0",
+            "versionNumber": "1.0.0.NEXT",
             "default": true
-        },
-        {
-            "package": "VdmcExample",
-            "path": "vdmc-example-app",
-            "versionName": "VdmcExample",
-            "versionNumber": "0.0.1.NEXT",
-            "default": false
         }
     ],
     "name": "vdmc-core",
@@ -41,7 +13,8 @@
     "sfdcLoginUrl": "https://login.salesforce.com",
     "sourceApiVersion": "54.0",
     "packageAliases": {
-        "Nebula Logger - Unlocked Package@4.7.1.1": "04t5Y0000015lgBQAQ",
-        "Nebula Logger Plugin - Logger Admin Dashboard@0.9.0-0": "04t5Y0000015l3yQAA"
+        "VdmcCorePackage": "0Ho7Q0000004CSQSA2",
+        "VdmcCorePackage@1.0.0-1": "04t7Q000000pm37QAA",
+        "VdmcCorePackage@1.0.0-2": "04t7Q000000pm3RQAQ"
     }
 }
