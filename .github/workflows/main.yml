@@ -52,4 +52,4 @@ jobs:
 
       - name: Create release definition file of current stage
         run: |
-          sfdx force:package:version:create -p VdmcCorePackage@1.0.0-2 -d vdmc-core-app -k aGq48vzC07 --wait 10 --codecoverage -json
+          sfdx force:package:version:create -p VdmcCorePackage -k aGq48vzC07 --wait 10 --codecoverage
