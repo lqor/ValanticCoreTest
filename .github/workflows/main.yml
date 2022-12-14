@@ -47,9 +47,20 @@ jobs:
         run: |
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
-          rm authfile
           sfdx config:set defaultdevhubusername=igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding
 
       - name: Create release definition file of current stage
         run: |
-          sfdx force:package:version:create -p VdmcCorePackage -k aGq48vzC07 --wait 10 --codecoverage
+          sfdx force:package:version:create -p VdmcCorePackage -k aGq48vzC07 --wait 10 --codecoverage > output.txt
+          cat output.txt
+          ids=$(grep -o '04t.*$' output.txt)
+          id=$(echo $ids | cut -d' ' -f1)
+
+      - name: Authenticate to PREVIEW
+        run: |
+            echo "${{ secrets.PREVIEW_SFDX_AUTH_URL }}" > ./authfile
+            sfdx auth:sfdxurl:store -f ./authfile -a preview
+
+      - name: Install new version into preview
+        run: |
+            sfdx force:package:install --package "$id" -u preview -k aGq48vzC07 --wait 10
