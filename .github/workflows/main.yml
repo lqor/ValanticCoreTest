@@ -48,6 +48,7 @@ jobs:
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
           rm authfile
+          sfdx config:set defaultdevhubusername=igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding
 
       - name: Create release definition file of current stage
         run: |
