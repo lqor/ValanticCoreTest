@@ -62,4 +62,21 @@ jobs:
           id=$(echo $ids | cut -d' ' -f1)
           echo "The id of a new package is $id"
           sfdx force:package:install --package "$id" -u preview -k aGq48vzC07 --wait 10
-          sfdx force:package:version:promote -p "$id" --noprompt
+          sfdx force:package:version:promote -p "$id" --noprompt --json
+      
+      - name: Update the sfdx-project.json with the new package version
+        run: |
+          sudo apt install jq
+          json=$(<sfdx-project.json)
+          version=$(echo $json | jq -r '.packageDirectories[0].versionNumber')
+          number=$(echo $version | cut -d'.' -f3)
+          number=$((number + 1))
+          echo $number
+          json=$(echo $json | jq ".packageDirectories[0].versionNumber = \"1.0.${number}.NEXT\"")
+          echo $json > sfdx-project.json
+          echo $json
+          git config --global user.name "igor.kudryk@dmc.valantic.com"
+          git config --global user.email "igor.kudryk@dmc.valantic.com"
+          git add -A
+          git commit -m "Increasing version at sfdx-project"
+          git push
