@@ -62,4 +62,4 @@ jobs:
           id=$(echo $ids | cut -d' ' -f1)
           echo "The id of a new package is $id"
           sfdx force:package:install --package "$id" -u preview -k aGq48vzC07 --wait 10
-          sfdx force:package:version:promote -p "$id"
+          sfdx force:package:version:promote -p "$id" -v "kudryk@curious-panda-2tfk3y.com"
