@@ -75,6 +75,7 @@ jobs:
           json=$(echo $json | jq ".packageDirectories[0].versionNumber = \"1.0.${number}.NEXT\"")
           echo $json > sfdx-project.json
           echo $json
+          git config --global --add safe.directory /__w/ValanticCoreTest/ValanticCoreTest
           git config --global user.name "igor.kudryk@dmc.valantic.com"
           git config --global user.email "igor.kudryk@dmc.valantic.com"
           git add -A
