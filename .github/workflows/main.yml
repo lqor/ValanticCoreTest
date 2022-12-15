@@ -60,5 +60,6 @@ jobs:
           cat output.txt
           ids=$(grep -o '04t.*$' output.txt)
           id=$(echo $ids | cut -d' ' -f1)
-          echo "The id is $id"
+          echo "The id of a new package is $id"
           sfdx force:package:install --package "$id" -u preview -k aGq48vzC07 --wait 10
+          sfdx force:package:version:promote -p "$id"
