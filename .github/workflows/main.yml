@@ -64,7 +64,7 @@ jobs:
           ids=$(grep -o '04t.*$' output.txt)
           id=$(echo $ids | cut -d' ' -f1)
           echo "The id of a new package is $id"
-          echo "::set-env name=ID::$id"
+          echo "ID=$id" >> $GITHUB_ENV
 
       - name: Promote the package
         run: |
