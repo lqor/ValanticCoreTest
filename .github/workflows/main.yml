@@ -30,6 +30,9 @@ on:
 
 env:
   RELEASE_NAME: "release-1.${{ github.run_number }}"
+  DEVHUB_USER_NAME: "igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding"
+  GIT_USERNAME: "igor.kudryk@dmc.valantic.com"
+  ID: ""
 
 jobs:
   prepare:
@@ -52,17 +55,24 @@ jobs:
         run: |
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
-          sfdx config:set defaultdevhubusername=igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding
+          sfdx config:set defaultdevhubusername="${{ env.DEVHUB_USER_NAME }}"
 
-      - name: Create release definition file of current stage
+      - name: Create new version of package
         run: |
           sfdx force:package:version:create -p VdmcCorePackage -k aGq48vzC07 --wait 10 --codecoverage > output.txt
           cat output.txt
           ids=$(grep -o '04t.*$' output.txt)
           id=$(echo $ids | cut -d' ' -f1)
           echo "The id of a new package is $id"
-          sfdx force:package:install --package "$id" -u preview -k aGq48vzC07 --wait 10
-          sfdx force:package:version:promote -p "$id" --noprompt --json
+          echo "::set-env name=ID::$id"
+
+      - name: Promote the package
+        run: |
+          echo ${{ env.ID }}"
+          sfdx force:package:install --package "${{ env.ID }}" -u preview -k aGq48vzC07 --wait 10
+          sfdx force:package:version:promote -p "${{ env.ID }}" --noprompt --json > jsonoutput.json
+          echo "The JSON output fromt he promotion"
+          cat jsonoutput.json
       
       - name: Update the sfdx-project.json with the new package version
         run: |
@@ -71,13 +81,16 @@ jobs:
           version=$(echo $json | jq -r '.packageDirectories[0].versionNumber')
           number=$(echo $version | cut -d'.' -f3)
           number=$((number + 1))
-          echo $number
           json=$(echo $json | jq ".packageDirectories[0].versionNumber = \"1.0.${number}.NEXT\"")
           echo $json > sfdx-project.json
           echo $json
+
+      - name: Update GitHub repository
+        run: |
+          cat sfdx-project.json
           git config --global --add safe.directory /__w/ValanticCoreTest/ValanticCoreTest
-          git config --global user.name "igor.kudryk@dmc.valantic.com"
-          git config --global user.email "igor.kudryk@dmc.valantic.com"
+          git config --global user.name "${{ env.GIT_USERNAME }}"
+          git config --global user.email "${{ env.GIT_USERNAME }}"
           git add -A
-          git commit -m "Increasing version at sfdx-project"
+          git commit -m "Increased version at sfdx-project"
           git push
