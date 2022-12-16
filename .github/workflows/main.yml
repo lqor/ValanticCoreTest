@@ -68,7 +68,7 @@ jobs:
 
       - name: Promote the package
         run: |
-          echo ${{ env.ID }}"
+          echo "${{ env.ID }}"
           sfdx force:package:install --package "${{ env.ID }}" -u preview -k aGq48vzC07 --wait 10
           sfdx force:package:version:promote -p "${{ env.ID }}" --noprompt --json > jsonoutput.json
           echo "The JSON output fromt he promotion"
