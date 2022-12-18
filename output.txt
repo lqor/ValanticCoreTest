@@ -1,7 +1,6 @@
 Request in progress. Sleeping 30 seconds. Will wait a total of 600 more seconds before timing out. Current Status='Initializing'
 Request in progress. Sleeping 30 seconds. Will wait a total of 570 more seconds before timing out. Current Status='Verifying metadata'
-Request in progress. Sleeping 30 seconds. Will wait a total of 540 more seconds before timing out. Current Status='Verifying metadata'
 sfdx-project.json has been updated.
-Successfully created the package version [08c7Q0000004DXqQAM]. Subscriber Package Version Id: 04t7Q000000pm5IQAQ
-Package Installation URL: https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7Q000000pm5IQAQ
+Successfully created the package version [08c7Q0000004DYtQAM]. Subscriber Package Version Id: 04t7Q000000pm5wQAA
+Package Installation URL: https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7Q000000pm5wQAA
 As an alternative, you can use the "sfdx force:package:install" command.
