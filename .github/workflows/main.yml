@@ -33,6 +33,7 @@ env:
   DEVHUB_USER_NAME: "igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding"
   GIT_USERNAME: "igor.kudryk@dmc.valantic.com"
   ID: ""
+  VERSION: ""
 
 jobs:
   prepare:
@@ -68,11 +69,8 @@ jobs:
 
       - name: Promote the package
         run: |
-          echo "${{ env.ID }}"
           sfdx force:package:install --package "${{ env.ID }}" -u preview -k aGq48vzC07 --wait 10
           sfdx force:package:version:promote -p "${{ env.ID }}" --noprompt --json > jsonoutput.json
-          echo "The JSON output fromt he promotion"
-          cat jsonoutput.json
       
       - name: Update the sfdx-project.json with the new package version
         run: |
@@ -83,7 +81,8 @@ jobs:
           number=$((number + 1))
           json=$(echo $json | jq ".packageDirectories[0].versionNumber = \"1.0.${number}.NEXT\"")
           echo $json > sfdx-project.json
-          echo $json
+          version_number=v${version%.NEXT}
+          echo "VERSION=$version_number" >> $GITHUB_ENV
 
       - name: Update GitHub repository
         run: |
@@ -91,6 +90,7 @@ jobs:
           git config --global --add safe.directory /__w/ValanticCoreTest/ValanticCoreTest
           git config --global user.name "${{ env.GIT_USERNAME }}"
           git config --global user.email "${{ env.GIT_USERNAME }}"
+          git tag -a "${{ env.VERSION }}" -m "Id of the new package: ${{ env.ID }}"
           git add -A
           git commit -m "Increased version at sfdx-project"
-          git push
+          git push --follow-tags
