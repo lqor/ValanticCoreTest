@@ -32,6 +32,7 @@ env:
   RELEASE_NAME: "release-1.${{ github.run_number }}"
   DEVHUB_USER_NAME: "igor.kudryk@dmc.valantic.com.vdmc-tech-onboarding"
   GIT_USERNAME: "igor.kudryk@dmc.valantic.com"
+  PASSWORD: "aGq48vzC07"
   ID: ""
   VERSION: ""
 
@@ -47,11 +48,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Authenticate to PREVIEW
-        run: |
-            echo "${{ secrets.PREVIEW_SFDX_AUTH_URL }}" > ./authfile
-            sfdx auth:sfdxurl:store -f ./authfile -a preview
-      
       - name: Authenticate to DevHub sandbox
         run: |
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
@@ -60,7 +56,7 @@ jobs:
 
       - name: Create new version of package
         run: |
-          sfdx force:package:version:create -p VdmcCorePackage -k aGq48vzC07 --wait 10 --codecoverage > output.txt
+          sfdx force:package:version:create -p VdmcCorePackage -k  "${{ env.PASSWORD }}" --wait 10 --codecoverage > output.txt
           cat output.txt
           ids=$(grep -o '04t.*$' output.txt)
           id=$(echo $ids | cut -d' ' -f1)
@@ -69,7 +65,6 @@ jobs:
 
       - name: Promote the package
         run: |
-          sfdx force:package:install --package "${{ env.ID }}" -u preview -k aGq48vzC07 --wait 10
           sfdx force:package:version:promote -p "${{ env.ID }}" --noprompt --json > jsonoutput.json
       
       - name: Update the sfdx-project.json with the new package version
