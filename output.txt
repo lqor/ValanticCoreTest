@@ -1,6 +1,18 @@
-Request in progress. Sleeping 30 seconds. Will wait a total of 600 more seconds before timing out. Current Status='Initializing'
-Request in progress. Sleeping 30 seconds. Will wait a total of 570 more seconds before timing out. Current Status='Verifying metadata'
+Request in progress. Sleeping 30 seconds. Will wait a total of 600 more seconds before timing out. Current Status='Queued'
+Request in progress. Sleeping 30 seconds. Will wait a total of 570 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 540 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 510 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 480 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 450 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 420 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 390 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 360 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 330 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 300 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 270 more seconds before timing out. Current Status='Initializing'
+Request in progress. Sleeping 30 seconds. Will wait a total of 240 more seconds before timing out. Current Status='Verifying metadata'
+Request in progress. Sleeping 30 seconds. Will wait a total of 210 more seconds before timing out. Current Status='Finalizing package version'
 sfdx-project.json has been updated.
-Successfully created the package version [08c7Q0000004DYtQAM]. Subscriber Package Version Id: 04t7Q000000pm5wQAA
-Package Installation URL: https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7Q000000pm5wQAA
+Successfully created the package version [08c7Q0000004DYyQAM]. Subscriber Package Version Id: 04t7Q000000pm61QAA
+Package Installation URL: https://login.salesforce.com/packaging/installPackage.apexp?p0=04t7Q000000pm61QAA
 As an alternative, you can use the "sfdx force:package:install" command.
