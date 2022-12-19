@@ -66,6 +66,7 @@ jobs:
       - name: Promote the package
         run: |
           sfdx force:package:version:promote -p "${{ env.ID }}" --noprompt --json > jsonoutput.json
+          cat jsonoutput.json
       
       - name: Update the sfdx-project.json with the new package version
         run: |
@@ -82,10 +83,10 @@ jobs:
       - name: Update GitHub repository
         run: |
           cat sfdx-project.json
-          git config --global --add safe.directory /__w/ValanticCoreTest/ValanticCoreTest
+          git config --global --add safe.directory /__w/ValanticCoreTest/VdmcCoreTest
           git config --global user.name "${{ env.GIT_USERNAME }}"
           git config --global user.email "${{ env.GIT_USERNAME }}"
           git tag -a "${{ env.VERSION }}" -m "Id of the new package: ${{ env.ID }}"
           git add -A
-          git commit -m "Increased version at sfdx-project"
+          git commit -m "Increased version at sfdx-project.json and create a new tag"
           git push --follow-tags
